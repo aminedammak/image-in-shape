@@ -16,25 +16,25 @@
 			};
 	}());
 	
-	function drawImage(time) {
+	function drawImage(ytransition, wdeform) {
 		for (sourceY = 0; sourceY < 768; sourceY++) { 
-				context.drawImage(imageObj, 0, sourceY, 1024 + sourceY, 1, 0, sourceY + time, 1024, 1);
+				context.drawImage(imageObj, 0, sourceY, 1024 + wdeform*sourceY/1000, 1, 0, sourceY + ytransition, 1024, 1);
 			}
 	}
 
 	function animate(startTime) {
 		// update
         var time = (new Date()).getTime() - startTime;
-		console.log(time);
 		
-		var linearSpeed = 24890;
+		var linearSpeed = 190;
         // pixels / second
         var newX = linearSpeed * time / 1000;
-		
+		console.log(newX);
+
 		// clear
         context.clearRect(0, 0, canvas.width, canvas.height);
 		
-		drawImage(newX);
+		drawImage(0, newX);
 		
 		// request new frame
         requestAnimFrame(function () {
