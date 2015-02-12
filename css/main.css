@@ -73,7 +73,8 @@ fieldset {
     margin: 0;
     padding: 0;
 }
-
+body {
+margin: 0;}
 /*
  * Allow only vertical resizing of textareas.
  */
@@ -151,7 +152,6 @@ textarea {
     position: absolute;
     width: 1px;
 }
-
 /*
  * Extends the .visuallyhidden class to allow the element to be focusable
  * when navigated to via the keyboard: h5bp.com/p
@@ -302,4 +302,17 @@ textarea {
 
 #canvas {
     border: 1px solid #ee4488;
+}
+
+.thumbnail-container {
+	opacity: 0.2;
+}
+.image-container {
+	margin-top: 200px;
+	margin-left: 200px;
+}
+#animCan {
+	position: absolute;
+	top: 0;
+	left: 0;
 }
