@@ -305,10 +305,11 @@ textarea {
 }
 
 .thumbnail-container {
-	opacity: 0.2;
+	margin: 50px 100px;
 }
+.thumbnail-container img {margin: 0 40px;}
 .image-container {
-	margin-top: 200px;
+	margin-top: 50px;
 	margin-left: 200px;
 }
 #animCan {
