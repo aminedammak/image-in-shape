@@ -68,13 +68,14 @@
 		var linearSpeed = 190;
         // pixels / second
         var newX = linearSpeed * time / 1000;
-		console.log(newX);
+		var newY = (3/2)*newX
+		console.log("newX"+newX);
 
 		// clear
         context.clearRect(0, 0, $animCanvas[0].width, $animCanvas[0].height);
 		
 		if(newX < 250) { 
-			context.drawImage(imageObj, 0, 0, 1024, 768, newX, newX, 100+newX, 100+newX);
+			context.drawImage(imageObj, 0, 0, 1024, 768, newX, newY, 100+newX, 100+newX);
 		} else {
 			$animCanvas[0].remove();
 		}
