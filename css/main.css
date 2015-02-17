@@ -309,9 +309,16 @@ textarea {
 }
 .thumbnail-container img {margin: 0 40px;}
 .image-container {
-	margin-top: 50px;
-	margin-left: 200px;
+	margin: 0 auto;
+	width: 60%;
+	height: 550px;
+	overflow: hidden;
+	margin-top: 3px;
 }
+.image-container img {
+	width: 100%;
+}
+
 #animCan {
 	position: absolute;
 	top: 0;
