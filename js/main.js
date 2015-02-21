@@ -5,34 +5,93 @@
 	"use strict";
     var floppyCarousel = {
 	
-		init : function(settings) {
+		init : function (settings) {
 			floppyCarousel.config = {
-				destinationImage : $(".image-container").eq(0)
+				destinationImage : ".image-container",
+				thumbnails : $(".thumbnail-container img")
 			};
 			$.extend(floppyCarousel.config, settings);
 			//Setting up the effects
 			floppyCarousel.setup();
 		},
+		getDestinationImage : function () {
+			return $(floppyCarousel.config.destinationImage).eq(0);
+		},
+		getThumbnails : function(){
+			return $(floppyCarousel.config.thumbnails);
+		},
+		clickedTumbnail : {},
 		setup : function () {
-			console.log(this.getDestinationDimCord().height);
+			floppyCarousel.beginEffect();
 		},
 		//Return and object containing the coordinate and dimensions of the destination
-		getDestinationDimCord : function() {
+		getDimCord : function ($element) {
 			var dimCord = {};
-			var offset = floppyCarousel.config.destinationImage.offset();
+			var offset = $($element).offset();
 			var x = offset.left;
 			var y = offset.top;
-			var width = floppyCarousel.config.destinationImage.innerWidth();
-			var height = floppyCarousel.config.destinationImage.innerHeight();
+			var width = $($element).innerWidth();
+			var height = $($element).innerHeight();
 			dimCord.x = x;
 			dimCord.y = y;
 			dimCord.width = width;
 			dimCord.height = height;
 			return dimCord;
-		}
+		},
+		
+		animateImage : function (startTime) {
+			// update
+			var time = floppyCarousel.getActualTime() - startTime;
 
-	}
-	$(document).ready(function(){
+			var linearSpeed = 190;
+			// pixels / second
+			var newX = linearSpeed * time / 10000;
+			var newY = (3 / 2) * newX;
+
+			// clear
+			floppyCarousel.canvasObj.context.clearRect(0, 0, floppyCarousel.canvasObj.canvas[0].width, floppyCarousel.canvasObj.canvas[0].height);
+
+			floppyCarousel.canvasObj.context.drawImage(floppyCarousel.canvasObj.imageObj, 0, 0, 1024, 768, floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x, floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y, floppyCarousel.canvasObj.imageObj.width, floppyCarousel.canvasObj.imageObj.height);
+			// request new frame
+			window.requestAnimFrame(function () {
+							console.log(floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y);
+
+				floppyCarousel.animateImage(startTime);
+							console.log("after"+floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y);
+
+			});
+		
+		},
+		beginEffect : function () {
+			var that = this;
+				floppyCarousel.getThumbnails().click(function (e) {
+				floppyCarousel.createIntermediateCanvas($(this));
+				var startTime = floppyCarousel.getActualTime();
+				floppyCarousel.clickedTumbnail = $(this);
+				floppyCarousel.animateImage(startTime);
+			});
+		},
+		canvasObj : {},
+		createIntermediateCanvas : function (sourceThumbnail) {
+			floppyCarousel.canvasObj.canvas = $('<canvas id="floppyCanvas" height="1000" width="1000"></canvas>');
+			floppyCarousel.canvasObj.canvas.appendTo("body");
+			floppyCarousel.canvasObj.context = floppyCarousel.canvasObj.canvas[0].getContext("2d");
+			floppyCarousel.canvasObj.imageObj = new Image();
+			floppyCarousel.canvasObj.imageObj.src = $(sourceThumbnail).attr('src');
+		},
+		getActualTime : function () {
+			return (new Date()).getTime();
+		}
+		
+	};
+	$(document).ready(function () {
 		floppyCarousel.init();
 	});
+	
+	window.requestAnimFrame = (function (callback) {
+		return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+			function (callback) {
+				window.setTimeout(callback, 1000 / 60);
+			};
+	}());
 }(jQuery));//End of musuem plugin global closure
