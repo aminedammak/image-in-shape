@@ -41,35 +41,33 @@
 		},
 		xProgress : 0,
 		yProgress : 0,
+		wProgress : 0,
+		hProgress : 0,
 		getXYStep : function () {
 			var verticalDistance = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).y -  floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y;
 			var horizontalDistance = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).x -  floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x;
-
+			var widthDifference = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).width - floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width;
+			var heightDifference = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height - floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).height;
 			var xRatio = Math.abs(horizontalDistance) / Math.abs(verticalDistance) * floppyCarousel.config.speed;
+			var widthRadio = Math.abs(widthDifference) / Math.abs(verticalDistance) * floppyCarousel.config.speed;
+			var heightRadio = Math.abs(heightDifference) / Math.abs(verticalDistance) * floppyCarousel.config.speed;
 			if (verticalDistance < 0) {
 				floppyCarousel.yProgress -= floppyCarousel.config.speed;
 			} else if (verticalDistance > 0) {
 				floppyCarousel.yProgress += floppyCarousel.config.speed;
 			}
-			
 			if (horizontalDistance < 0) {
 				floppyCarousel.xProgress -= xRatio;
 			} else if (horizontalDistance > 0) {
 				floppyCarousel.xProgress += xRatio;
 			}
-			return { xProgress : floppyCarousel.xProgress, yProgress : floppyCarousel.yProgress };
+			floppyCarousel.wProgress += widthRadio;
+			floppyCarousel.hProgress += heightRadio;
+			
+			return { xProgress : floppyCarousel.xProgress, yProgress : floppyCarousel.yProgress, wProgress : floppyCarousel.wProgress, hProgress : floppyCarousel.hProgress };
 		},
-		
 		animateImage : function (startTime) {
-			// update
-			var time = floppyCarousel.getActualTime() - startTime;
-
-			var linearSpeed = 390;
-			// pixels / second
-			var newX = linearSpeed * time / 1000;
-
 			floppyCarousel.clearCanvas();
-
 			floppyCarousel.canvasObj.context.drawImage(
 				floppyCarousel.canvasObj.imageObj,
 				0,
@@ -78,24 +76,34 @@
 				floppyCarousel.canvasObj.imageObj.height,
 				floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x + floppyCarousel.getXYStep().xProgress,
 				floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y + floppyCarousel.getXYStep().yProgress,
-				floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width,
-				floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).height
+				floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width + floppyCarousel.getXYStep().wProgress,
+				floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).height + floppyCarousel.getXYStep().hProgress
 			);
+		
+			console.log(floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width + floppyCarousel.getXYStep().wProgress);
+			
 			// request new frame
 			window.requestAnimFrame(function () {
-				floppyCarousel.animateImage(startTime);
-				console.log("yprogress" + floppyCarousel.getXYStep().yProgress);
 				var diff = (floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).y) - (floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y);
-				console.log("DestinationImage" + diff);
+				
+				//if the animated image rich the top left corner of the destination image
 				if (Math.abs(floppyCarousel.getXYStep().yProgress) >= Math.abs(diff)) {
 					floppyCarousel.deleteIntermediateCanvas();
+					//Reset progress
+					floppyCarousel.yProgress = 0;
+					floppyCarousel.xProgress = 0;
+					floppyCarousel.wProgress = 0;
+					floppyCarousel.hProgress = 0;
+				} else {
+					//continue animation
+					floppyCarousel.animateImage(startTime);
 				}
 			});
-		
 		},
 		beginEffect : function () {
 			var that = this;
 			floppyCarousel.getThumbnails().click(function (e) {
+				console.log("clicked");
 				floppyCarousel.deleteIntermediateCanvas();
 				floppyCarousel.createIntermediateCanvas($(this));
 				var startTime = floppyCarousel.getActualTime();
@@ -104,7 +112,7 @@
 			});
 		},
 		canvasObj : {},
-		canvasElement : $('<canvas id="floppyCanvas" height="1000" width="1000"></canvas>'),
+		canvasElement : $('<canvas id="floppyCanvas" height="1000" width="1300"></canvas>'),
 		createIntermediateCanvas : function (sourceThumbnail) {
 			floppyCarousel.canvasObj.canvas = floppyCarousel.canvasElement;
 			floppyCarousel.canvasObj.canvas.appendTo("body");
