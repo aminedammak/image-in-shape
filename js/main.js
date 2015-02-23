@@ -9,7 +9,7 @@
 			floppyCarousel.config = {
 				destinationImage : ".image-container",
 				thumbnails : $(".thumbnail-container img"),
-				speed : 1
+				speed : 2
 			};
 			$.extend(floppyCarousel.config, settings);
 			//Setting up the effects
