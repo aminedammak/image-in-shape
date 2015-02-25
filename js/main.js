@@ -68,7 +68,13 @@
 		},
 		animateImage : function (startTime) {
 			floppyCarousel.clearCanvas();
-			floppyCarousel.canvasObj.context.drawImage(
+			
+			floppyCarousel.deformLateral(floppyCarousel.canvasObj.imageObj, floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).height + floppyCarousel.getXYStep().hProgress, floppyCarousel.canvasObj.imageObj.width,
+floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width + floppyCarousel.getXYStep().wProgress,
+floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x + floppyCarousel.getXYStep().xProgress,
+floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y + floppyCarousel.getXYStep().yProgress);
+			
+			/*floppyCarousel.canvasObj.context.drawImage(
 				floppyCarousel.canvasObj.imageObj,
 				0,
 				0,
@@ -78,7 +84,7 @@
 				floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y + floppyCarousel.getXYStep().yProgress,
 				floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width + floppyCarousel.getXYStep().wProgress,
 				floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).height + floppyCarousel.getXYStep().hProgress
-			);
+			);*/
 		
 			console.log(floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width + floppyCarousel.getXYStep().wProgress);
 			
@@ -99,6 +105,11 @@
 					floppyCarousel.animateImage(startTime);
 				}
 			});
+		},
+		deformLateral : function (imageObj, imgHeight, imgWidth, imgDestWidth, imgX, imgY) {
+			for (var sourceY = 0; sourceY < imgHeight; sourceY++) {
+				floppyCarousel.canvasObj.context.drawImage(imageObj, 0, sourceY, imgWidth, 1, imgX, imgY + sourceY, imgDestWidth - sourceY, 1);
+			}
 		},
 		beginEffect : function () {
 			var that = this;
