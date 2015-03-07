@@ -10,7 +10,7 @@
 			floppyCarousel.config = {
 				destinationImage : ".image-container",
 				thumbnails : $(".thumbnail-container img"),
-				speed : 1,
+				speed : 3,
 				fitSpeed : 10
 			};
 			$.extend(floppyCarousel.config, settings);
@@ -83,17 +83,18 @@
 			
 			// request new frame
 			window.requestAnimFrame(function () {
+				//Object containing the returned object of the getXYStep() function
+				var XYStepProgress = floppyCarousel.getXYStep();
 				var diff = (floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).y) - (floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y);
-
 				//if the animated image rich the top left corner of the destination image
-				if (Math.abs(floppyCarousel.getXYStep().yProgress) >= Math.abs(diff)) {
-					floppyCarousel.fitToDestination();
+				if (Math.abs(XYStepProgress.yProgress) >= Math.abs(diff)) {
 					floppyCarousel.destHeightfit = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height;
-					floppyCarousel.clickedThWfit = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width + floppyCarousel.getXYStep().wProgress;
-					floppyCarousel.clickedThWxfit = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x + floppyCarousel.getXYStep().xProgress;
-					floppyCarousel.clickedThWyfit = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y + floppyCarousel.getXYStep().yProgress;
-					floppyCarousel.xProgressfit = floppyCarousel.getXYStep().xProgress;
-					floppyCarousel.wProgressfit = floppyCarousel.getXYStep().wProgress;
+					floppyCarousel.clickedThWfit = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width + XYStepProgress.wProgress;
+					floppyCarousel.clickedThWxfit = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x + XYStepProgress.xProgress;
+					floppyCarousel.xProgressfit = XYStepProgress.xProgress;
+					floppyCarousel.wProgressfit = XYStepProgress.wProgress;
+					floppyCarousel.clickedThWyfit = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y + XYStepProgress.yProgress;
+					floppyCarousel.fitToDestination();
 				} else {
 					//Continue animation
 					floppyCarousel.animateImage(startTime);
@@ -111,7 +112,7 @@
 										 floppyCarousel.xProgressfit,
 										 floppyCarousel.wProgressfit);
 			window.requestAnimFrame(function () {
-				if (floppyCarousel.imgWidthIncline > 0) {
+				if (floppyCarousel.xProgressLateralFit < floppyCarousel.xProgressfit) {
 					floppyCarousel.fitToDestination();
 				} else {
 					//Reset progress
@@ -120,7 +121,6 @@
 					floppyCarousel.wProgress = 0;
 					floppyCarousel.hProgress = 0;
 					floppyCarousel.xProgressLateralFit = 0;
-					console.log("exited");
 				}
 			});
 		},
@@ -129,6 +129,7 @@
 			var imgWidthIncline = 0;
 			var sourceY;
 			floppyCarousel.xProgressLateralFit += floppyCarousel.config.speed * floppyCarousel.config.fitSpeed;
+			console.log(floppyCarousel.xProgressLateralFit);
 			function stepFit(i) {
 				return floppyCarousel.xProgressLateralFit * i / imgHeight;
 			}
