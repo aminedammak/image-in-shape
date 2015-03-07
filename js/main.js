@@ -10,7 +10,7 @@
 			floppyCarousel.config = {
 				destinationImage : ".image-container",
 				thumbnails : $(".thumbnail-container img"),
-				speed : 3,
+				speed : 1,
 				fitSpeed : 3
 			};
 			$.extend(floppyCarousel.config, settings);
@@ -47,6 +47,7 @@
 		wProgress : 0,
 		hProgress : 0,
 		xProgressLateralFit : 0,
+		imageFitDestinationFully : false,
 
 		getXYStep : function () {
 			var verticalDistance = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).y -  floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y;
@@ -112,7 +113,7 @@
 										 floppyCarousel.xProgressfit,
 										 floppyCarousel.wProgressfit);
 			window.requestAnimFrame(function () {
-				if (Math.abs(floppyCarousel.xProgressLateralFit) < Math.abs(floppyCarousel.xProgressfit)) {
+				if (!floppyCarousel.imageFitDestinationFully || (Math.abs(floppyCarousel.xProgressLateralFit) < Math.abs(floppyCarousel.xProgressfit)) ) {
 					floppyCarousel.fitToDestination();
 				} else {
 					floppyCarousel.deleteIntermediateCanvas();
@@ -123,19 +124,18 @@
 					floppyCarousel.hProgress = 0;
 					floppyCarousel.xProgressLateralFit = 0;
 				}
+				//floppyCarousel.fitToDestination();
 			});
 		},
 		deformLateralFit : function (imageObj, imgHeight, imgWidth, imgDestWidth, imgX, imgY, xProgress, wProgress) {
 			var imgXIncline = 0;
-			var imgWidthIncline = 0;
+			var imgWIncline = 0;
 			var sourceY;
 			var horizontalDistance = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).x -  floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x;
 			if (horizontalDistance < 0) {
 				floppyCarousel.xProgressLateralFit -= floppyCarousel.config.speed * floppyCarousel.config.fitSpeed;
-				console.log(" negative "+horizontalDistance);
 			} else if (horizontalDistance > 0) {
 				floppyCarousel.xProgressLateralFit += floppyCarousel.config.speed * floppyCarousel.config.fitSpeed;
-				console.log(" positive "+horizontalDistance);
 			}
 			function stepFit(i) {
 				return floppyCarousel.xProgressLateralFit * i / imgHeight;
@@ -143,8 +143,15 @@
 			for (sourceY = 0; sourceY < imgHeight; sourceY++) {
 				var stepFitval = stepFit(sourceY);
 				var imgXstepFit = imgX - imgXIncline + stepFitval;
-				floppyCarousel.canvasObj.context.drawImage(imageObj, 0, sourceY, imgWidth, 1, imgXstepFit, imgY + sourceY, imgDestWidth, 1);
+				var imgWstepFit = imgDestWidth - imgWIncline + stepFitval*4;
+				floppyCarousel.canvasObj.context.drawImage(imageObj, 0, sourceY, imgWidth, 1, imgXstepFit, imgY + sourceY, imgWstepFit, 1);
 				imgXIncline += xProgress / imgHeight;
+				imgWIncline += wProgress / imgHeight;
+				if (sourceY === imgHeight - 1) {
+					if (imgWstepFit >= imgDestWidth) {
+						floppyCarousel.imageFitDestinationFully = true;
+					}
+				}
 			}
 		},
 		deformLateral : function (imageObj, imgHeight, imgWidth, imgDestWidth, imgX, imgY, xProgress, wProgress) {
