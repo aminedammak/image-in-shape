@@ -89,7 +89,7 @@
 				var diff = (floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).y) - (floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y);
 				//if the animated image rich the top left corner of the destination image
 				if (Math.abs(XYStepProgress.yProgress) >= Math.abs(diff)) {
-					floppyCarousel.destHeightfit = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height;
+					floppyCarousel.destHeightfit = floppyCarousel.canvasObj.imageObj.height;
 					floppyCarousel.clickedThWfit = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width + XYStepProgress.wProgress;
 					floppyCarousel.clickedThWxfit = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x + XYStepProgress.xProgress;
 					floppyCarousel.xProgressfit = XYStepProgress.xProgress;
@@ -112,6 +112,7 @@
 										 floppyCarousel.clickedThWyfit,
 										 floppyCarousel.xProgressfit,
 										 floppyCarousel.wProgressfit);
+			//console.log(floppyCarousel.destHeightfit );
 			window.requestAnimFrame(function () {
 				if (!floppyCarousel.imageFitDestinationFully || (Math.abs(floppyCarousel.xProgressLateralFit) < Math.abs(floppyCarousel.xProgressfit)) ) {
 					floppyCarousel.fitToDestination();
