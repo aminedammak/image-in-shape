@@ -11,7 +11,7 @@
 				destinationImage : ".image-container",
 				thumbnails : $(".thumbnail-container img"),
 				speed : 3,
-				fitSpeed : 10
+				fitSpeed : 3
 			};
 			$.extend(floppyCarousel.config, settings);
 			
@@ -112,9 +112,10 @@
 										 floppyCarousel.xProgressfit,
 										 floppyCarousel.wProgressfit);
 			window.requestAnimFrame(function () {
-				if (floppyCarousel.xProgressLateralFit < floppyCarousel.xProgressfit) {
+				if (Math.abs(floppyCarousel.xProgressLateralFit) < Math.abs(floppyCarousel.xProgressfit)) {
 					floppyCarousel.fitToDestination();
 				} else {
+					floppyCarousel.deleteIntermediateCanvas();
 					//Reset progress
 					floppyCarousel.yProgress = 0;
 					floppyCarousel.xProgress = 0;
@@ -128,8 +129,14 @@
 			var imgXIncline = 0;
 			var imgWidthIncline = 0;
 			var sourceY;
-			floppyCarousel.xProgressLateralFit += floppyCarousel.config.speed * floppyCarousel.config.fitSpeed;
-			console.log(floppyCarousel.xProgressLateralFit);
+			var horizontalDistance = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).x -  floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x;
+			if (horizontalDistance < 0) {
+				floppyCarousel.xProgressLateralFit -= floppyCarousel.config.speed * floppyCarousel.config.fitSpeed;
+				console.log(" negative "+horizontalDistance);
+			} else if (horizontalDistance > 0) {
+				floppyCarousel.xProgressLateralFit += floppyCarousel.config.speed * floppyCarousel.config.fitSpeed;
+				console.log(" positive "+horizontalDistance);
+			}
 			function stepFit(i) {
 				return floppyCarousel.xProgressLateralFit * i / imgHeight;
 			}
