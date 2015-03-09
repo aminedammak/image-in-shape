@@ -89,7 +89,7 @@
 				var diff = (floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).y) - (floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y);
 				//if the animated image rich the top left corner of the destination image
 				if (Math.abs(XYStepProgress.yProgress) >= Math.abs(diff)) {
-					floppyCarousel.destHeightfit = floppyCarousel.canvasObj.imageObj.height;
+					floppyCarousel.destHeightfit = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height;
 					floppyCarousel.clickedThWfit = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width + XYStepProgress.wProgress;
 					floppyCarousel.clickedThWxfit = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x + XYStepProgress.xProgress;
 					floppyCarousel.xProgressfit = XYStepProgress.xProgress;
@@ -132,6 +132,7 @@
 			var imgXIncline = 0;
 			var imgWIncline = 0;
 			var sourceY;
+			var imgHeightRadio = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height / floppyCarousel.canvasObj.imageObj.naturalHeight; 
 			var horizontalDistance = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).x -  floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x;
 			if (horizontalDistance < 0) {
 				floppyCarousel.xProgressLateralFit -= floppyCarousel.config.speed * floppyCarousel.config.fitSpeed;
@@ -184,6 +185,8 @@
 			floppyCarousel.canvasObj.context = floppyCarousel.canvasObj.canvas[0].getContext("2d");
 			floppyCarousel.canvasObj.imageObj = new Image();
 			floppyCarousel.canvasObj.imageObj.src = $(sourceThumbnail).attr('src');
+			floppyCarousel.createImageHavingDestinationImgDimensions();
+			floppyCarousel.canvasObj.imageObj.src = floppyCarousel.outputImage.attr('src');
 		},
 		deleteIntermediateCanvas : function () {
 			floppyCarousel.canvasElement.remove();
@@ -198,6 +201,19 @@
 		},
 		getActualTime : function () {
 			return (new Date()).getTime();
+		},
+		createImageHavingDestinationImgDimensions : function () {
+			var canvasForResizing = $("<canvas id='resizing_canvas'></canvas>");
+			var imgForResizing = $("<img id='outputImage' />");
+
+			canvasForResizing.appendTo("body");
+			imgForResizing.appendTo("body");
+			var c = document.getElementById('resizing_canvas');
+			canvasForResizing.attr('height', floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height);
+			canvasForResizing.attr('width', floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).width);
+			c.getContext("2d").drawImage(floppyCarousel.canvasObj.imageObj, 0, 0, floppyCarousel.canvasObj.imageObj.width, floppyCarousel.canvasObj.imageObj.height, 0, 0, floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).width, floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height);
+			$('#outputImage').attr('src', c.toDataURL("image/jpeg"));
+			floppyCarousel.outputImage = $('#outputImage');
 		}
 		
 	};
