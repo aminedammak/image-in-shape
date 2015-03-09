@@ -132,10 +132,11 @@
 			var imgXIncline = 0;
 			var imgWIncline = 0;
 			var sourceY;
-			var imgHeightRadio = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height / floppyCarousel.canvasObj.imageObj.naturalHeight; 
+			var operator = 1;
 			var horizontalDistance = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).x -  floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x;
 			if (horizontalDistance < 0) {
 				floppyCarousel.xProgressLateralFit -= floppyCarousel.config.speed * floppyCarousel.config.fitSpeed;
+				operator = -1;
 			} else if (horizontalDistance > 0) {
 				floppyCarousel.xProgressLateralFit += floppyCarousel.config.speed * floppyCarousel.config.fitSpeed;
 			}
@@ -145,7 +146,7 @@
 			for (sourceY = 0; sourceY < imgHeight; sourceY++) {
 				var stepFitval = stepFit(sourceY);
 				var imgXstepFit = imgX - imgXIncline + stepFitval;
-				var imgWstepFit = imgDestWidth - imgWIncline + stepFitval*4;
+				var imgWstepFit = imgDestWidth - imgWIncline + stepFitval * operator * 4;
 				floppyCarousel.canvasObj.context.drawImage(imageObj, 0, sourceY, imgWidth, 1, imgXstepFit, imgY + sourceY, imgWstepFit, 1);
 				imgXIncline += xProgress / imgHeight;
 				imgWIncline += wProgress / imgHeight;
