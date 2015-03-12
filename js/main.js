@@ -10,8 +10,8 @@
 			floppyCarousel.config = {
 				destinationImage : ".image-container",
 				thumbnails : $(".thumbnail-container img"),
-				speed : 1,
-				fitSpeed : 3
+				speed : 3,
+				fitSpeed : 2
 			};
 			$.extend(floppyCarousel.config, settings);
 			
@@ -114,9 +114,7 @@
 										 floppyCarousel.wProgressfit);
 			//console.log(floppyCarousel.destHeightfit );
 			window.requestAnimFrame(function () {
-				if (!floppyCarousel.imageFitDestinationFully || (Math.abs(floppyCarousel.xProgressLateralFit) < Math.abs(floppyCarousel.xProgressfit)) ) {
-					floppyCarousel.fitToDestination();
-				} else {
+				if (floppyCarousel.imageFitDestinationFully && (Math.abs(floppyCarousel.xProgressLateralFit) >= Math.abs(floppyCarousel.xProgressfit)) ) {
 					floppyCarousel.deleteIntermediateCanvas();
 					//Reset progress
 					floppyCarousel.yProgress = 0;
@@ -124,8 +122,9 @@
 					floppyCarousel.wProgress = 0;
 					floppyCarousel.hProgress = 0;
 					floppyCarousel.xProgressLateralFit = 0;
+				} else {
+					floppyCarousel.fitToDestination();
 				}
-				//floppyCarousel.fitToDestination();
 			});
 		},
 		deformLateralFit : function (imageObj, imgHeight, imgWidth, imgDestWidth, imgX, imgY, xProgress, wProgress) {
@@ -140,13 +139,23 @@
 			} else if (horizontalDistance > 0) {
 				floppyCarousel.xProgressLateralFit += floppyCarousel.config.speed * floppyCarousel.config.fitSpeed;
 			}
+
 			function stepFit(i) {
 				return floppyCarousel.xProgressLateralFit * i / imgHeight;
 			}
 			for (sourceY = 0; sourceY < imgHeight; sourceY++) {
 				var stepFitval = stepFit(sourceY);
-				var imgXstepFit = imgX - imgXIncline + stepFitval;
-				var imgWstepFit = imgDestWidth - imgWIncline + stepFitval * operator * 4;
+				var imgWstepFit, imgXstepFit;
+				if(!floppyCarousel.imageFitDestinationFully) {
+					imgWstepFit = imgDestWidth - imgWIncline + stepFitval * operator * 4;
+				} else {
+					imgWstepFit = imgWidth;
+				}
+				if (Math.abs(floppyCarousel.xProgressLateralFit) >= Math.abs(floppyCarousel.xProgressfit)) {
+					imgXstepFit = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).x;
+				} else {
+					imgXstepFit = imgX - imgXIncline + stepFitval;
+				}
 				floppyCarousel.canvasObj.context.drawImage(imageObj, 0, sourceY, imgWidth, 1, imgXstepFit, imgY + sourceY, imgWstepFit, 1);
 				imgXIncline += xProgress / imgHeight;
 				imgWIncline += wProgress / imgHeight;
