@@ -50,11 +50,13 @@
 		imageFitDestinationFully : false,
 
 		getXYStep : function () {
-			var verticalDistance = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).y -  floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y;
-			var horizontalDistance = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).x -  floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x;
-			var widthDifference = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).width - floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width;
-			var heightDifference = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height - floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).height;
-			var xRatio = Math.abs(horizontalDistance) / Math.abs(verticalDistance) * floppyCarousel.config.speed;
+
+			var verticalDistance = floppyCarousel.getDestinationImageY -  floppyCarousel.getClickedTumbnailY;
+
+			floppyCarousel.horizontalDistance = floppyCarousel.getDestinationImageX -  floppyCarousel.getClickedTumbnailX;
+			var widthDifference = floppyCarousel.getDestinationImageWidth - floppyCarousel.getClickedTumbnailWidth;
+			var heightDifference = floppyCarousel.getDestinationImageHeight - floppyCarousel.getClickedTumbnailHeight;
+			var xRatio = Math.abs(floppyCarousel.horizontalDistance) / Math.abs(verticalDistance) * floppyCarousel.config.speed;
 			var widthRadio = Math.abs(widthDifference) / Math.abs(verticalDistance) * floppyCarousel.config.speed;
 			var heightRadio = Math.abs(heightDifference) / Math.abs(verticalDistance) * floppyCarousel.config.speed;
 			if (verticalDistance < 0) {
@@ -62,9 +64,9 @@
 			} else if (verticalDistance > 0) {
 				floppyCarousel.yProgress += floppyCarousel.config.speed;
 			}
-			if (horizontalDistance < 0) {
+			if (floppyCarousel.horizontalDistance < 0) {
 				floppyCarousel.xProgress -= xRatio;
-			} else if (horizontalDistance > 0) {
+			} else if (floppyCarousel.horizontalDistance > 0) {
 				floppyCarousel.xProgress += xRatio;
 			}
 			floppyCarousel.wProgress += widthRadio;
@@ -73,12 +75,24 @@
 			return { xProgress : floppyCarousel.xProgress, yProgress : floppyCarousel.yProgress, wProgress : floppyCarousel.wProgress, hProgress : floppyCarousel.hProgress, xRatio : xRatio };
 		},
 		animateImage : function (startTime) {
+			floppyCarousel.getDestinationImageX = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).x ;
+			floppyCarousel.getDestinationImageY = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).y ;
+			floppyCarousel.getDestinationImageHeight = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height;
+			floppyCarousel.getDestinationImageWidth = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).width ;
+
+
+			floppyCarousel.getClickedTumbnailX = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x;
+			floppyCarousel.getClickedTumbnailY = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y;
+			floppyCarousel.getClickedTumbnailWidth = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width;
+			floppyCarousel.getClickedTumbnailHeight = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).height;
+
+
 			floppyCarousel.clearCanvas();
 			floppyCarousel.deformLateral(floppyCarousel.canvasObj.imageObj, Math.abs(floppyCarousel.getXYStep().yProgress),
 										 floppyCarousel.canvasObj.imageObj.width,
-										 floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width + floppyCarousel.getXYStep().wProgress,
-										 floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x + floppyCarousel.getXYStep().xProgress,
-										 floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y + floppyCarousel.getXYStep().yProgress,
+										 floppyCarousel.getClickedTumbnailWidth + floppyCarousel.getXYStep().wProgress,
+										 floppyCarousel.getClickedTumbnailX + floppyCarousel.getXYStep().xProgress,
+										 floppyCarousel.getClickedTumbnailY + floppyCarousel.getXYStep().yProgress,
 										 floppyCarousel.getXYStep().xProgress,
 										 floppyCarousel.getXYStep().wProgress);
 			
@@ -86,15 +100,15 @@
 			window.requestAnimFrame(function () {
 				//Object containing the returned object of the getXYStep() function
 				var XYStepProgress = floppyCarousel.getXYStep();
-				var diff = (floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).y) - (floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y);
+				var diff = (floppyCarousel.getDestinationImageY) - (floppyCarousel.getClickedTumbnailY);
 				//if the animated image rich the top left corner of the destination image
 				if (Math.abs(XYStepProgress.yProgress) >= Math.abs(diff)) {
-					floppyCarousel.destHeightfit = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height;
-					floppyCarousel.clickedThWfit = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).width + XYStepProgress.wProgress;
-					floppyCarousel.clickedThWxfit = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x + XYStepProgress.xProgress;
+					floppyCarousel.destHeightfit = floppyCarousel.getDestinationImageHeight;
+					floppyCarousel.clickedThWfit = floppyCarousel.getClickedTumbnailWidth + XYStepProgress.wProgress;
+					floppyCarousel.clickedThWxfit = floppyCarousel.getClickedTumbnailX + XYStepProgress.xProgress;
 					floppyCarousel.xProgressfit = XYStepProgress.xProgress;
 					floppyCarousel.wProgressfit = XYStepProgress.wProgress;
-					floppyCarousel.clickedThWyfit = floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).y + XYStepProgress.yProgress;
+					floppyCarousel.clickedThWyfit = floppyCarousel.getClickedTumbnailY + XYStepProgress.yProgress;
 					floppyCarousel.fitToDestination();
 				} else {
 					//Continue animation
@@ -112,7 +126,6 @@
 										 floppyCarousel.clickedThWyfit,
 										 floppyCarousel.xProgressfit,
 										 floppyCarousel.wProgressfit);
-			//console.log(floppyCarousel.destHeightfit );
 			window.requestAnimFrame(function () {
 				if (floppyCarousel.imageFitDestinationFully && (Math.abs(floppyCarousel.xProgressLateralFit) >= Math.abs(floppyCarousel.xProgressfit)) ) {
 					floppyCarousel.deleteIntermediateCanvas();
@@ -127,16 +140,16 @@
 				}
 			});
 		},
+
 		deformLateralFit : function (imageObj, imgHeight, imgWidth, imgDestWidth, imgX, imgY, xProgress, wProgress) {
 			var imgXIncline = 0;
 			var imgWIncline = 0;
 			var sourceY;
 			var operator = 1;
-			var horizontalDistance = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).x -  floppyCarousel.getDimCord(floppyCarousel.clickedTumbnail).x;
-			if (horizontalDistance < 0) {
+			if (floppyCarousel.horizontalDistance < 0) {
 				floppyCarousel.xProgressLateralFit -= floppyCarousel.config.speed * floppyCarousel.config.fitSpeed;
 				operator = -1;
-			} else if (horizontalDistance > 0) {
+			} else if (floppyCarousel.horizontalDistance > 0) {
 				floppyCarousel.xProgressLateralFit += floppyCarousel.config.speed * floppyCarousel.config.fitSpeed;
 			}
 
@@ -152,7 +165,7 @@
 					imgWstepFit = imgWidth;
 				}
 				if (Math.abs(floppyCarousel.xProgressLateralFit) >= Math.abs(floppyCarousel.xProgressfit)) {
-					imgXstepFit = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).x;
+					imgXstepFit = floppyCarousel.getDestinationImageX;
 				} else {
 					imgXstepFit = imgX - imgXIncline + stepFitval;
 				}
