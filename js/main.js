@@ -135,6 +135,7 @@
 					floppyCarousel.wProgress = 0;
 					floppyCarousel.hProgress = 0;
 					floppyCarousel.xProgressLateralFit = 0;
+					floppyCarousel.imageFitDestinationFully = false;
 				} else {
 					floppyCarousel.fitToDestination();
 				}
@@ -160,7 +161,7 @@
 				var stepFitval = stepFit(sourceY);
 				var imgWstepFit, imgXstepFit;
 				if(!floppyCarousel.imageFitDestinationFully) {
-					imgWstepFit = imgDestWidth - imgWIncline + stepFitval * operator * 4;
+					imgWstepFit = imgDestWidth - imgWIncline + stepFitval * operator * 14;
 				} else {
 					imgWstepFit = imgWidth;
 				}
@@ -193,7 +194,6 @@
 		beginEffect : function () {
 			var that = this;
 			floppyCarousel.getThumbnails().click(function (e) {
-				floppyCarousel.deleteIntermediateCanvas();
 				floppyCarousel.createIntermediateCanvas($(this));
 				var startTime = floppyCarousel.getActualTime();
 				floppyCarousel.clickedTumbnail = $(this);
@@ -213,6 +213,8 @@
 		},
 		deleteIntermediateCanvas : function () {
 			floppyCarousel.canvasElement.remove();
+			floppyCarousel.canvasForResizing.remove();
+			floppyCarousel.imgForResizing.remove();
 		},
 		clearCanvas : function () {
 			floppyCarousel.canvasObj.context.clearRect(
@@ -226,14 +228,14 @@
 			return (new Date()).getTime();
 		},
 		createImageHavingDestinationImgDimensions : function () {
-			var canvasForResizing = $("<canvas id='resizing_canvas'></canvas>");
-			var imgForResizing = $("<img id='outputImage' />");
+			floppyCarousel.canvasForResizing = $("<canvas id='resizing_canvas'></canvas>");
+			floppyCarousel.imgForResizing = $("<img id='outputImage' />");
 
-			canvasForResizing.appendTo("body");
-			imgForResizing.appendTo("body");
+			floppyCarousel.canvasForResizing.appendTo("body");
+			floppyCarousel.imgForResizing.appendTo("body");
 			var c = document.getElementById('resizing_canvas');
-			canvasForResizing.attr('height', floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height);
-			canvasForResizing.attr('width', floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).width);
+			floppyCarousel.canvasForResizing.attr('height', floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height);
+			floppyCarousel.canvasForResizing.attr('width', floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).width);
 			c.getContext("2d").drawImage(floppyCarousel.canvasObj.imageObj, 0, 0, floppyCarousel.canvasObj.imageObj.width, floppyCarousel.canvasObj.imageObj.height, 0, 0, floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).width, floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height);
 			$('#outputImage').attr('src', c.toDataURL("image/jpeg"));
 			floppyCarousel.outputImage = $('#outputImage');
