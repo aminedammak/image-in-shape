@@ -161,7 +161,7 @@
 				var stepFitval = stepFit(sourceY);
 				var imgWstepFit, imgXstepFit;
 				if(!floppyCarousel.imageFitDestinationFully) {
-					imgWstepFit = imgDestWidth - imgWIncline + stepFitval * operator * 14;
+					imgWstepFit = imgDestWidth - imgWIncline + stepFitval * operator * Math.abs(imgWIncline / imgXIncline);
 				} else {
 					imgWstepFit = imgWidth;
 				}
