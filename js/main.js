@@ -6,27 +6,40 @@
 	//principal literal object
     var floppyCarousel = {
 	
+		/*
+			Funciton that specify settings and 
+		  	@params settings object that will replace the default floppyCarousel.config object
+		 */
 		init : function (settings) {
 			floppyCarousel.config = {
+				//DOM Element in which the big image will be placed
 				destinationImage : ".image-container",
+				
+				//List of thumbnail images on which we click to launch the animation
 				thumbnails : $(".thumbnail-container img"),
-				speed : 3,
-				fitSpeed : 2
+				
+				//Seed of the animation form the clicked thumbnail to the top of the destination image
+				speed : 6,
+				
+				//Speed of the animation: begin when the animated image rich the top of the destination image and end when the animated image become exactly equal te the destionation image
+				fitSpeed : 4
 			};
+			
+			//Merge the content of the settings object in the floppyCarousel.config object
 			$.extend(floppyCarousel.config, settings);
 			
-			//Setting up the effects
-			floppyCarousel.setup();
+			//Begin
+			floppyCarousel.beginEffect();
 		},
 		getDestinationImage : function () {
 			return $(floppyCarousel.config.destinationImage).eq(0);
 		},
+		
+		/*
+		 *	retun the list of thumbnail
+		 */
 		getThumbnails : function () {
 			return $(floppyCarousel.config.thumbnails);
-		},
-		clickedTumbnail : {},
-		setup : function () {
-			floppyCarousel.beginEffect();
 		},
 		//Return and object containing the coordinate and dimensions of the destination
 		getDimCord : function ($element) {
@@ -74,7 +87,7 @@
 			
 			return { xProgress : floppyCarousel.xProgress, yProgress : floppyCarousel.yProgress, wProgress : floppyCarousel.wProgress, hProgress : floppyCarousel.hProgress, xRatio : xRatio };
 		},
-		animateImage : function (startTime) {
+		animateImage : function () {
 			floppyCarousel.getDestinationImageX = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).x ;
 			floppyCarousel.getDestinationImageY = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).y ;
 			floppyCarousel.getDestinationImageHeight = floppyCarousel.getDimCord(floppyCarousel.getDestinationImage()).height;
@@ -112,7 +125,7 @@
 					floppyCarousel.fitToDestination();
 				} else {
 					//Continue animation
-					floppyCarousel.animateImage(startTime);
+					floppyCarousel.animateImage();
 				}
 			});
 		},
@@ -161,7 +174,7 @@
 				var stepFitval = stepFit(sourceY);
 				var imgWstepFit, imgXstepFit;
 				if(!floppyCarousel.imageFitDestinationFully) {
-					imgWstepFit = imgDestWidth - imgWIncline + stepFitval * operator * Math.abs(imgWIncline / imgXIncline);
+					imgWstepFit = imgDestWidth - imgWIncline + stepFitval * operator *  Math.abs(imgWIncline / imgXIncline) ;
 				} else {
 					imgWstepFit = imgWidth;
 				}
@@ -191,23 +204,30 @@
 				floppyCarousel.imgWidthIncline = imgWidthIncline;
 			}
 		},
+		/**
+		 *	Function trigger the animation when clicking the thumbnail
+		 */
 		beginEffect : function () {
-			var that = this;
 			floppyCarousel.getThumbnails().click(function (e) {
 				floppyCarousel.createIntermediateCanvas($(this));
-				var startTime = floppyCarousel.getActualTime();
 				floppyCarousel.clickedTumbnail = $(this);
-				floppyCarousel.animateImage(startTime);
+				floppyCarousel.animateImage();
 			});
 		},
 		canvasObj : {},
 		canvasElement : $('<canvas id="floppyCanvas" height="1000" width="1300"></canvas>'),
+		
+		/**
+		 * Create a canvas that will show the animated image
+		 * @param sourceThumbnail the image that will be animated
+		 */
 		createIntermediateCanvas : function (sourceThumbnail) {
 			floppyCarousel.canvasObj.canvas = floppyCarousel.canvasElement;
 			floppyCarousel.canvasObj.canvas.appendTo("body");
 			floppyCarousel.canvasObj.context = floppyCarousel.canvasObj.canvas[0].getContext("2d");
 			floppyCarousel.canvasObj.imageObj = new Image();
 			floppyCarousel.canvasObj.imageObj.src = $(sourceThumbnail).attr('src');
+			//floppyCarousel.outputImage will be a copy of the floppyCarousel.canvasObj.imageObj having the same dimension as the destination area
 			floppyCarousel.createImageHavingDestinationImgDimensions();
 			floppyCarousel.canvasObj.imageObj.src = floppyCarousel.outputImage.attr('src');
 		},
@@ -224,9 +244,10 @@
 				floppyCarousel.canvasObj.canvas[0].height
 			);
 		},
-		getActualTime : function () {
-			return (new Date()).getTime();
-		},
+
+		/**
+	     * Create an image having the same dimension as the destination area 
+		 */
 		createImageHavingDestinationImgDimensions : function () {
 			floppyCarousel.canvasForResizing = $("<canvas id='resizing_canvas'></canvas>");
 			floppyCarousel.imgForResizing = $("<img id='outputImage' />");
