@@ -232,7 +232,9 @@
 			floppyCarousel.canvasObj.imageObj.src = floppyCarousel.outputImage.attr('src');
 		},
 		deleteIntermediateCanvas : function () {
+			console.log("before removing");console.log(floppyCarousel.canvasElement);
 			floppyCarousel.canvasElement.remove();
+			console.log("after removing"); console.log(floppyCarousel.canvasElement);
 			floppyCarousel.canvasForResizing.remove();
 			floppyCarousel.imgForResizing.remove();
 		},
